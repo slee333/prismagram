@@ -490,6 +490,9 @@ package.json에서 script 부분을 볼게요.
 ```
 여기 보면 여러 스크립트들이 있는데 하나씩 설명하도록 하겠습니다.
 
+
+
+
 1. **build**
 
 src 폴더 내에 있는 자바스크립트 파일들을 heroku는 이해하지 못합니다. (신형? 자바스크립트라서)
@@ -499,12 +502,16 @@ src 폴더 내에 있는 자바스크립트 파일들을 heroku는 이해하지 
 그런데 여기서 한가지 문제가 생기는데, babel은 자바스크립트 파일들만 신경쓰기 때문에 src 폴더 내 GraphQL 파일들이 복사되지 않는다는 겁니다.
 
 
+
+
 2. **postbuild**
 
 
 때문에 package.json/script에 postbuild를 보시면 "postbuild": "cd src && npx copy ./api/**/*.graphql ../build/api/" 라는 스크립트가 있습니다. 이 커맨드를 이용해 ./src 내의 GraphQL 파일들을 ./build 폴더 내로 복사합니다
 
 - 제가 윈도우라 커맨드가 "npx copy ./api/..." 이런식인데 **MacOS**에선 npx를 뺴고 "copy ./api/..."로 하면 되는 것 같습니다. 리눅스는 잘 모르겠네요.. 맥과 비슷하지 않을지..?
+
+
 
 
 3. **prebuild**
@@ -517,14 +524,18 @@ src 폴더 내에 있는 자바스크립트 파일들을 heroku는 이해하지 
 
 여기에는 prisma.yml파일이 필요합니다. 지난번에는 제가 prisma.yml 파일 내에 prisma endpoint 주소가 있어 직접 업로드를 하지 않는다고 말씀드렸는데요, 여기 오픈소스에서 가져온 버젼에는
 
+
 ```js
 endpoint: ${env:PRISMA_ENDPOINT}
 datamodel: datamodel.prisma
 ```
 
+
 이런식으로 prisma endpoint 주소를 환경변수로 빼준걸 확인하실수 있습니다.
 
 작업할때야 .env 파일에 이 변수들을 지정해둘 수 있지만 .env파일을 git을 통해 올리면 안되니 이 변수들은 나중에 heroku에서 config vars 섹션을 이용해 지정해줍니다.
+
+
 
 
 4. **start**
@@ -612,6 +623,18 @@ Heroku 앱으로 돌아가서 - Setting - config vars 로 가서 기존에 .env 
 이렇게 하면 vars를 업데이트 할 때 마다 heroku가 알아서 재시작하면서 prisma generate까지 문제없이 완료되며 deploy가 끝났습니다.
 
 
+---
+
+## 3.4 Prisma demo 서버를 heroku로 변경 (TO DO)
+
+
+이건 아직 못한 부분입니다. Prisma에서 원래 Add a new server 버튼을 통해 새 히로쿠 서버를 만들고 연결시킬수 있는데 현재는 create server 버튼이 비활성화되어있네요.
+
+
+*Creating a new Heroku server is currently disabled.* 라는걸로 봐서 향후 다시 풀리지 않을까 싶긴 합니다.
+
+
+또 이 과정이 사실 불필요할 수도 있는게, 해커톤에서 프로토타입을 보여줄땐 실제 유저들을 받는게 아니니까 데모 서버만 써도 충분하지 않을까 싶기도 합니다.
 
 
 ---

@@ -461,12 +461,92 @@ server.start({ port: PORT }, () =>
 
 ---
 
-# 3. Heroku에 업로드:
+# 3. Heroku에 Deploy:
+
+Heroku에 어떻게 deploy했는지 과정을 설명드릴게요.
+
+Heroku 계정과 비밀번호는 이미 Slack에 올려두었고 링크를 통해 접속하실 수 있어요.
+
+어떤 과정을 통해 Heroku에 올라갔는지 알고 싶으시거나, 혼자 따로 한번 올려보고 싶으시면 아래 과정을 따라가시면 되겠습니다.
+
+
+
+## 3.0 준비
+
+package.json에서 script 부분을 볼게요.
+
+```javascript
+"scripts": {
+    "deploy": "prisma deploy",
+    "generate": "prisma generate",
+    "prisma": "yarn run deploy && yarn run generate",
+    "dev": "nodemon --exec babel-node src/server.js",
+    "prebuild": "yarn run generate",
+    "build": "babel src -d build",
+    "postbuild": "cd src && npx copy ./api/**/*.graphql ../build/api/",
+    "start": "node build/server.js"
+  }
+
+```
+여기 보면 여러 스크립트들이 있는데 하나씩 설명하도록 하겠습니다.
+
+1. **build**
+
+src 폴더 내에 있는 자바스크립트 파일들을 heroku는 이해하지 못합니다. (신형? 자바스크립트라서)
+
+때문에 *package.json* 내에 있는 "babel src -d build" 커맨드를 통해 build 폴더를 생성합니다. 이 폴더는 기본적으로 src와 동일합니다. 차이가 있다면 구식 자바스크립트를 사용한다는 것입니다. babel은 신형 JS를 구형 JS로 변환시켜주는 모듈이니까요.
+
+그런데 여기서 한가지 문제가 생기는데, babel은 자바스크립트 파일들만 신경쓰기 때문에 src 폴더 내 GraphQL 파일들이 복사되지 않는다는 겁니다.
+
+
+2. **postbuild**
+
+
+때문에 package.json/script에 postbuild를 보시면 "postbuild": "cd src && npx copy ./api/**/*.graphql ../build/api/" 라는 스크립트가 있습니다. 이 커맨드를 이용해 ./src 내의 GraphQL 파일들을 ./build 폴더 내로 복사합니다
+
+- 제가 윈도우라 커맨드가 "npx copy ./api/..." 이런식인데 **MacOS**에선 npx를 뺴고 "copy ./api/..."로 하면 되는 것 같습니다. 리눅스는 잘 모르겠네요.. 맥과 비슷하지 않을지..?
+
+
+3. **prebuild**
+
+
+근데 이것만 하면 서버파일들이 작동하지 않는데, prisma client가 없기 때문입니다. prisma-client가 들어있는 generated 폴더나 모듈들이 들어있는 node_modules 폴더는 git에 업로드하지 않으니 이 부분들은 저희가 서버에서 따로 만들어주게 됩니다. package.json을 heroku가 감지해서 node_modules는 자동으로 만들어주는데 generated 폴더는 만들어주지 않으니 이걸 해주는 코드를 추가해야 하고, 그게 "prebuild" 부분입니다.
+
+따라서 "prebuild": "yarn run generate"를 script 안에 넣어줍니다. 이러면 yarn run generate가 build 전에 실행되서 prisma client를 만들어줍니다.
+
+
+여기에는 prisma.yml파일이 필요합니다. 지난번에는 제가 prisma.yml 파일 내에 prisma endpoint 주소가 있어 직접 업로드를 하지 않는다고 말씀드렸는데요, 여기 오픈소스에서 가져온 버젼에는
+
+```js
+endpoint: ${env:PRISMA_ENDPOINT}
+datamodel: datamodel.prisma
+```
+
+이런식으로 prisma endpoint 주소를 환경변수로 빼준걸 확인하실수 있습니다.
+
+작업할때야 .env 파일에 이 변수들을 지정해둘 수 있지만 .env파일을 git을 통해 올리면 안되니 이 변수들은 나중에 heroku에서 config vars 섹션을 이용해 지정해줍니다.
+
+
+4. **start**
+
+"node build/server.js" 커맨드를 통해 서버를 build하고 시작합니다. 여기까지 무사히 마치게 되면 heroku에 서버가 성공적으로 deploy 되겠죠.
+
+
+--- 
+
+
+이 다음부턴 Heroku에 deploy하는 과정입니다.
+
+
+이미 deploy 자체는 되어있습니다. 어떤 과정을 통해 deploy됬는지만 나열할게요.
+
 
 ## 3.1 Heroku CLI 설치
 
 [Heroku CLI](https://devcenter.heroku.com/articles/heroku-command-line) 설치 사이트에서 Heroku Cli를 설치합니다.
 
+
+---
 ## 3.2 Heroku에 로그인
 
 Heroku에 로그인합니다.
@@ -483,6 +563,8 @@ heroku login
 
 이제 heroku 대시보드에 들어가면 hground-backend라는 앱이 보일거에요.
 
+
+---
 ## 3.3 git 이용해 heroku에 deploy하기
 
 이 과정은 대시보드 - hground-backend - deploy에서도 문서로 확인하실 수 있어요.
@@ -505,58 +587,39 @@ see git remote heroku to https://git.heroku.com/hground-backend.git
 git push heroku master
 ```
 
+커맨드를 입력해주면 heroku로 deploy가 시작됩니다. 
 
-위 사이트에서 
 
-heroku에 서버를 deploy해보겠습니다.
+package.json.script에 정의한 순서대로 prebuild - build - postbuild - start가 진행됨을 알 수 있습니다.
 
-package.json에서 script 부분을 볼게요.
 
-```javascript
-"scripts": {
-    "deploy": "prisma deploy",
-    "generate": "prisma generate",
-    "prisma": "yarn run deploy && yarn run generate",
-    "dev": "nodemon --exec babel-node src/server.js",
-    "prebuild": "yarn run generate",
-    "build": "babel src -d build",
-    "postbuild": "cd src && npx copy ./api/**/*.graphql ../build/api/",
-    "start": "node build/server.js"
-  }
+그런데 이대로만 하면 에러가 뜰겁니다.
 
 ```
-여기 보면 여러 스크립트들이 있는데 하나씩 설명하도록 하겠습니다.
 
+[WARNING] in /tmp/build_5dd6e7bac854f94a2752131859f626f9/prisma.yml: A
+remote:  ▸    valid environment variable to satisfy the declaration
+remote:  ▸    'env:PRISMA_ENDPOINT' could not be found.
 
-src 폴더 내에 있는 자바스크립트 파일들을 heroku는 이해하지 못합니다. (신형? 자바스크립트라서)
-
-때문에 *package.json* 내에 있는 "babel src -d build" 커맨드를 통해 build 폴더를 생성합니다. 이 폴더는 기본적으로 src와 동일합니다. 차이가 있다면 Old JS를 사용한다는 것입니다. (babel 사용)
-
-그런데 여기서 한가지 문제가 생기는데, babel은 자바스크립트 파일들만 신경쓰기 때문에 src 폴더 내 GraphQL 파일들이 복사되지 않는다는 겁니다.
-
-
-때문에 package.json/script에 postbuild를 보시면 "postbuild": "cd src && npx copy ./api/**/*.graphql ../build/api/" 라는 스크립트가 있습니다. 이 커맨드를 이용해 ./src 내의 GraphQL 파일들을 ./build 폴더 내로 복사합니다
-- 제가 윈도우라 커맨드가 "npx copy ./api/..." 이런식인데 MacOS에선 npx를 뺴고 "copy ./api/..."로 하면 되는 것 같습니다.
-
-
-근데 이것만 하면 서버파일들이 작동하지 않는데, prisma client가 없기 때문입니다. prisma-client가 들어있는 generated 폴더나 모듈들이 들어있는 node_modules 폴더는 git에 업로드하지 않으니 이 부분들은 저희가 서버에서 따로 만들어주게 됩니다. package.json을 heroku가 감지해서 node_modules는 자동으로 만들어주는데 generated 폴더는 만들어주지 않으니 이걸 해주는 코드를 추가해야 하고, 그게 "prebuild" 부분입니다.
-
-
-"prebuild": "yarn run generate" 커맨드를 build 전에 실행해 prisma client를 만들어줍니다. 여기에는 prisma.yml파일이 필요합니다. 지난번에는 제가 prisma.yml 파일 내에 prisma endpoint 주소가 있어 직접 업로드를 하지 않는다고 말씀드렸는데요, 여기 오픈소스에서 가져온 버젼에는
-
-```js
-endpoint: ${env:PRISMA_ENDPOINT}
-datamodel: datamodel.prisma
 ```
 
-이런식으로 prisma endpoint 주소를 환경변수로 빼준걸 확인하실수 있습니다.
+아마 이런 메시지가 뜰건데요. .env 파일에 들어있는 PRISMA_ENDPOINT가 prisma.yml 파일로 전달되지 않아서 그렇습니다.
 
-작업할때야 .env 파일에 이 변수들을 지정해둘 수 있지만 .env파일을 git을 통해 올리면 안되니 이 변수들은 heroku에서 config vars 섹션을 이용해 지정해줍니다.
+
+Heroku 앱으로 돌아가서 - Setting - config vars 로 가서 기존에 .env 파일 안에 들어있던 내용들을 다 입력해줍니다.
+
+
+이렇게 하면 vars를 업데이트 할 때 마다 heroku가 알아서 재시작하면서 prisma generate까지 문제없이 완료되며 deploy가 끝났습니다.
+
+
+
+
+---
 
 
 ## To-Do-List
 
-README.MD에서 체크리스트를 남기는 방법인데 편해보이네용. 우리도 요렇게 사용해도 되지않을까요?
+README.MD에서 체크리스트를 남기는 방법인데 편해보이네용. 우리도 이렇게 해도 되지않을까요?
 
 - [x] Create account
 - [x] Request Secret

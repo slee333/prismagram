@@ -3,4 +3,4 @@ export const isAuthenticated = request => {
     throw Error("You need to log in to perform this action");
   }
   return;
-};
+}; 

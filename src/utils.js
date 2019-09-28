@@ -12,9 +12,10 @@ const sendMail = email => {
   const options = {
     auth: {
       api_user: process.env.SENDGRID_USERNAME,
-      api_key: process.env.SENGRID_PASSWORD
+      api_key: process.env.SENDGRID_PASSWORD
     }
   };
+  console.log(options)
   const client = nodemailer.createTransport(sgTransport(options));
   return client.sendMail(email);
 };

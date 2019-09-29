@@ -20,6 +20,18 @@ type User {
   updatedAt: DateTime! @updatedAt
 }
 
+type Hospital {
+  id: ID! @id
+  location: String
+  bio: String
+  files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+  users: [User!]!
+  rooms: [Room!]!
+  name: String!
+  email: String
+  contact: String
+}
+
 type Post {
   id: ID! @id
   location: String
@@ -53,6 +65,7 @@ type File {
   id: ID! @id
   url: String!
   post: Post @relation(name: "FilesOfPost")
+  hospital: Hospital @relation(name: "FilesOfHospital"
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }

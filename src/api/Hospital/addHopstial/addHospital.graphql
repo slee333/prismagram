@@ -1,0 +1,11 @@
+type Mutation {
+  addHospital(
+    name: String!
+    email: String!
+    location: String
+    contact: String
+    bio: String
+    rooms: [Room!]!
+    users: [User!]!
+  ): Boolean!
+}

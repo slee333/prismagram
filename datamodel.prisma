@@ -18,6 +18,7 @@ type User {
   loginSecret: String
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
+  hospital: Hospital
 }
 
 type Hospital {
@@ -65,7 +66,7 @@ type File {
   id: ID! @id
   url: String!
   post: Post @relation(name: "FilesOfPost")
-  hospital: Hospital @relation(name: "FilesOfHospital"
+  hospital: Hospital @relation(name: "FilesOfHospital")
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }

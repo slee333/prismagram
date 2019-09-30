@@ -6,14 +6,15 @@ export default {
     staffs: ({ id }) => prisma.hospital({ id }).staffs(),
     rooms: ({ id }) => prisma.hospital({ id }).rooms(),
     admin: ({ id }) => prisma.hospital({ id }).admin(),
+    files: ({ id }) => prisma.hospital({ id }).files(),
     patientsCount: ({ id }) =>
       prisma
-        .patientsConnection({ where: { hospital: { id } } })
+        .usersConnection({ where: { patientof_some: {id } } })
         .aggregate()
         .count(),
     staffsCount: ({ id }) =>
       prisma
-        .staffsConnection({ where: { hospital: { id } } })
+      .usersConnection({ where: { staffof_some: { id } } })
         .aggregate()
         .count(),
     isYours: async (parent, _, { request }) => {

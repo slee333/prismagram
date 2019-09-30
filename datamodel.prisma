@@ -18,7 +18,9 @@ type User {
   loginSecret: String
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
-  hospital: Hospital
+  adminof: [Hospital!]! @relation(name: "AdminOfHospital")
+  staffof: [Hospital!]! @relation(name: "StaffOfHospital")
+  patientof: [Hospital!]! @relation(name: "PatientOfHospital")
 }
 
 type Hospital {
@@ -26,11 +28,13 @@ type Hospital {
   location: String
   bio: String
   files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
-  users: [User!]!
   rooms: [Room!]!
-  name: String!
-  email: String
-  contact: String
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+  admin: User! @relation(name: "AdminOfHospital")
+  staffs: [User!]! @relation(name: "StaffOfHospital")
+  patients: [User!]! @relation(name: "PatientOfHospital")
 }
 
 type Post {

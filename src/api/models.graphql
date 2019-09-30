@@ -21,6 +21,26 @@ type User {
   loginSecret: String!
   createdAt: String
   updatedAt: String
+  adminof: [Hospital!]! 
+  staffof: [Hospital!]! 
+  patientof: [Hospital!]!
+}
+
+type Hospital {
+  id: ID!
+  location: String
+  bio: String
+  files: [File!]!
+  rooms: [Room!]!
+  name: String!
+  email: String
+  contact: String
+  admin: User
+  staffs: [User!]!
+  patients: [User!]!
+  patientsCount: Int!
+  staffsCount: Int!
+  isYours: Boolean!
 }
 
 type Post {
@@ -59,6 +79,7 @@ type File {
   id: ID!
   url: String!
   post: Post!
+  hospital: Hospital
   createdAt: String
   updatedAt: String
 }

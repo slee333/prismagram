@@ -1,11 +1,12 @@
-import { adjectives, nouns } from "./words";
 import nodemailer from "nodemailer";
 import sgTransport from "nodemailer-sendgrid-transport";
 import jwt from "jsonwebtoken";
 
 export const generateSecret = () => {
-  const randomNumber = Math.floor(Math.random() * adjectives.length);
-  return `${adjectives[randomNumber]} ${nouns[randomNumber]}`;
+  const randomNumber = Math.random()
+    .toString(36)
+    .substring(2, 8);
+  return `${randomNumber}`;
 };
 
 const sendMail = email => {

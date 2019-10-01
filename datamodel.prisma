@@ -27,6 +27,7 @@ type Hospital {
   id: ID! @id
   location: String
   bio: String
+  posts: [Post!]! @relation(name:"PostsOfHospital", onDelete: CASCADE)
   files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
   rooms: [Room!]!
   name: String! @unique
@@ -42,6 +43,7 @@ type Post {
   location: String
   caption: String!
   user: User @relation(name: "PostsOfUser")
+  hospital: Hospital @relation(name:"PostsOfHospital")
   files: [File!]! @relation(name: "FilesOfPost", onDelete: CASCADE)
   likes: [Like!]! @relation(name: "LikeOfPost", onDelete: CASCADE)
   comments: [Comment!]! @relation(name: "CommentOfPost", onDelete: CASCADE)

@@ -2,6 +2,7 @@
 
 Instragram clone with Express + Prisma + React and React Native
 이 리포지토리는 서버 역할을 수행합니다.
+master branch로 merge가 끝났습니다.
 
 ---
 

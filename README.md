@@ -25,21 +25,16 @@ yarn install (or) npm install
 
 ## 1.2 비는 파일들 설치하기
 
-필요한 파일들 중 prisma.yml 파일과 src/.env 파일은 깃허브에 업로드하지 않았습니다. 슬랙에 따로 올려드렸으니 거기서 다운받아 덮어씌우시면 될거같아요.
+필요한 파일인 .env 파일은 깃허브에 업로드하지 않았습니다. 슬랙에 따로 올려드렸으니 거기서 다운받아 덮어씌우시면 될거같아요.
+.env 파일은 프로젝트 폴더에 바로 넣으시면 됩니다.
+
 
 ## 1.3 Prisma 계정 만들기, Prisma 설치하기
 
+#### 1.3.1 계정
 
-#### 1.3.1 계정 만들기
-
-제가 여러분들 이메일로 Prisma 초대를 보냈어요.
-
-    Prisma Cloud - invite to workspace "dhh10-workspace"
-
-
-이런 제목으로 갔을거에요. Join workspace를 눌러 Prisma 아이디를 만들어주세요.
-그럼 dhh-10 workspace에 들어가실 수 있을거에요. 그 안에 보면 dhh10-project란 서비스가 있을텐데 이게 저희 데이터베이스입니다.
-(프리즈마에서 무료로 제공하는 데모 서버입니다)
+dhhhground@gmail.com 이란 프리즈마 아이드를 만들었습니다.
+계정과 비밀번호는 Slack 백엔드방에 올려놓았어요.
 
 #### 1.3.2 프리즈마 설치하기
 
@@ -85,14 +80,16 @@ GraphQL playground를 통해 서버 내 데이터들을 수정도 해보고 DB�
 ```js
 mutation {
     createAccount {
-        userName: "slee333"
-        name: "SEUNGWOOK LEE"
+        username: "slee333"
+        firstName: "SEUNGWOOK"
+        lastName: "LEE"
         email: "seungwooklee94@gmail.com"
     } {
         id
-        userName
+        username
         email
-        name
+        firstName
+        lastName
     }
 }
 ```
@@ -102,15 +99,15 @@ mutation {
 
 ```js
 query {
-    allUsers {
+    seeUser(username: "slee333") {
         id
-        name
+        username
     }
 }
 ```
-아마 이때까지 만들어진 모든 유저들이 뜰껍니다.
+아마 방금 만든 유저의 데이터가 뜰겁니다.
 
-데이터베이스는 위 방법만이 아니라 Prisma console을 통해서도 직접 확인할 수 있어요. **1.3** 에서 dhh-workspace 내에 있는 dhh10-project를 클릭해서 들어가시면 보실 수 있습니다.
+데이터베이스는 위 방법만이 아니라 Prisma console을 통해서도 직접 확인할 수 있어요. **1.3** 에서 dhh-workspace 내에 있는 hground-backend를 클릭해서 들어가시면 보실 수 있습니다.
 
 질문 있으시면 알려주세요!
 

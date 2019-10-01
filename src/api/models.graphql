@@ -21,16 +21,18 @@ type User {
   loginSecret: String!
   createdAt: String
   updatedAt: String
-  adminof: [Hospital!]! 
-  staffof: [Hospital!]! 
+  adminof: [Hospital!]!
+  staffof: [Hospital!]!
   patientof: [Hospital!]!
 }
 
 type Hospital {
   id: ID!
+  avatar: String
   location: String
   bio: String
   files: [File!]!
+  posts: [Post!]!
   rooms: [Room!]!
   name: String!
   email: String

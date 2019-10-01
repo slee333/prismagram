@@ -22,7 +22,6 @@ export default {
       const { user } = request;
       const { id: parentId } = parent;
       const ADMIN = await prisma.hospital({ id: parentId }).admin();
-
       return user.id === ADMIN.id;
     }
   }

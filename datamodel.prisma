@@ -25,6 +25,10 @@ type User {
 
 type Hospital {
   id: ID! @id
+  avatar: String 
+    @default(
+      value:"https://image.flaticon.com/icons/svg/1546/1546074.svg"
+    )
   location: String
   bio: String
   posts: [Post!]! @relation(name:"PostsOfHospital", onDelete: CASCADE)

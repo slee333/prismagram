@@ -7,6 +7,7 @@ export default {
     rooms: ({ id }) => prisma.hospital({ id }).rooms(),
     admin: ({ id }) => prisma.hospital({ id }).admin(),
     files: ({ id }) => prisma.hospital({ id }).files(),
+    posts: ({ id }) => prisma.hospital({ id }).posts(),
     patientsCount: ({ id }) =>
       prisma
         .usersConnection({ where: { patientof_some: {id } } })

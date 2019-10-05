@@ -8,6 +8,9 @@ export default {
     likes: ({ id }) => prisma.user({ id }).likes(),
     comments: ({ id }) => prisma.user({ id }).comments(),
     rooms: ({ id }) => prisma.user({ id }).rooms(),
+    adminof: ({ id }) => prisma.user({ id }).adminof(),
+    staffof: ({ id }) => prisma.user({ id }).staffof(),
+    patientof: ({ id }) => prisma.user({ id }).patientof(),
     postsCount: ({ id }) =>
       prisma
         .postsConnection({ where: { user: { id } } })

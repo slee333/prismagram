@@ -43,6 +43,7 @@ type Hospital {
   patientsCount: Int!
   staffsCount: Int!
   isYours: Boolean!
+  address: String
 }
 
 type Post {

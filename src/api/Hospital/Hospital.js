@@ -1,4 +1,5 @@
 import { prisma } from "../../../generated/prisma-client";
+import { getGeoCode } from "../../middlewares";
 
 export default {
   Hospital: {
@@ -10,12 +11,12 @@ export default {
     posts: ({ id }) => prisma.hospital({ id }).posts(),
     patientsCount: ({ id }) =>
       prisma
-        .usersConnection({ where: { patientof_some: {id } } })
+        .usersConnection({ where: { patientof_some: { id } } })
         .aggregate()
         .count(),
     staffsCount: ({ id }) =>
       prisma
-      .usersConnection({ where: { staffof_some: { id } } })
+        .usersConnection({ where: { staffof_some: { id } } })
         .aggregate()
         .count(),
     isYours: async (parent, _, { request }) => {
@@ -24,6 +25,12 @@ export default {
       const { id: parentId } = parent;
       const ADMIN = await prisma.hospital({ id: parentId }).admin();
       return user.id === ADMIN.id;
+    },
+    address: async ({ id }, _, { request }) => {
+      // Stringified된 주소를 return할겁니다.
+      const add = await prisma.hospital({ id }).location();
+      const address = await getGeoCode(add);
+      return address;
     }
   }
 };

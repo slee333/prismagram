@@ -21,6 +21,9 @@ type User {
   adminof: [Hospital!]! @relation(name: "AdminOfHospital")
   staffof: [Hospital!]! @relation(name: "StaffOfHospital")
   patientof: [Hospital!]! @relation(name: "PatientOfHospital")
+  followingHospital: [Hospital!] @relation(name: "FollowingHospital")
+  interest: [String!] @scalarList(strategy: RELATION)
+  profession: [String!] @scalarList(strategy: RELATION)
 }
 
 type Hospital {
@@ -40,6 +43,7 @@ type Hospital {
   admin: User! @relation(name: "AdminOfHospital")
   staffs: [User!]! @relation(name: "StaffOfHospital")
   patients: [User!]! @relation(name: "PatientOfHospital")
+  followers: [User!] @relation(name: "FollowingHospital")
 }
 
 type Post {

@@ -24,6 +24,9 @@ type User {
   adminof: [Hospital!]!
   staffof: [Hospital!]!
   patientof: [Hospital!]!
+  followingHospital: [Hospital!]
+  interest: [String!]
+  profession: [String!]
 }
 
 type Hospital {
@@ -44,6 +47,7 @@ type Hospital {
   staffsCount: Int!
   isYours: Boolean!
   address: String
+  followers: [User!]
 }
 
 type Post {
